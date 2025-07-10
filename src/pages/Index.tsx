@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +7,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Star, Globe } from 'lucide-react';
+import { Star, Globe, Loader2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { fetchUrlMetadata } from '@/utils/urlFetcher';
+import DownloadButton from '@/components/DownloadButton';
 
 const Index = () => {
   const [url, setUrl] = useState('https://example.com');
@@ -17,11 +20,39 @@ const Index = () => {
   const [showRating, setShowRating] = useState(true);
   const [showFavicon, setShowFavicon] = useState(true);
   const [device, setDevice] = useState('desktop');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const previewRef = useRef<HTMLDivElement>(null);
 
-  const handleFetch = () => {
-    // Simulate fetching URL data
-    console.log('Fetching URL:', url);
-    // In a real app, this would make an API call to fetch the page metadata
+  const handleFetch = async () => {
+    if (!url.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid URL",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const metadata = await fetchUrlMetadata(url);
+      setPageTitle(metadata.title);
+      setMetaDescription(metadata.description);
+      
+      toast({
+        title: "Success",
+        description: "URL metadata fetched successfully!"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch URL metadata. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const renderStars = (rating: number) => {
@@ -34,7 +65,10 @@ const Index = () => {
   };
 
   const SerpPreview = () => (
-    <div className={`bg-white rounded-lg p-4 shadow-sm border ${device === 'mobile' ? 'max-w-sm' : 'max-w-2xl'}`}>
+    <div 
+      ref={previewRef}
+      className={`bg-white rounded-lg p-4 shadow-sm border transition-all duration-300 hover:shadow-md ${device === 'mobile' ? 'max-w-sm' : 'max-w-2xl'}`}
+    >
       <div className="flex items-start gap-3">
         {showFavicon && (
           <div className="flex-shrink-0 mt-1">
@@ -47,7 +81,7 @@ const Index = () => {
           <div className="flex items-center gap-2 mb-1">
             <span className="text-sm text-gray-600 truncate">{url}</span>
           </div>
-          <h3 className="text-xl text-blue-600 hover:underline cursor-pointer mb-2 line-clamp-2">
+          <h3 className="text-xl text-blue-600 hover:underline cursor-pointer mb-2 line-clamp-2 transition-colors duration-200">
             {pageTitle}
           </h3>
           <p className="text-sm text-gray-600 leading-relaxed mb-2 line-clamp-3">
@@ -98,13 +132,21 @@ const Index = () => {
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     placeholder="Enter your website URL"
-                    className="flex-1 bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500"
+                    className="flex-1 bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 focus:bg-white/90 transition-all duration-200"
                   />
                   <Button 
                     onClick={handleFetch}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 shadow-lg"
+                    disabled={isLoading}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 shadow-lg disabled:opacity-50 transition-all duration-200"
                   >
-                    FETCH
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        FETCHING
+                      </>
+                    ) : (
+                      'FETCH'
+                    )}
                   </Button>
                 </div>
               </div>
@@ -119,9 +161,9 @@ const Index = () => {
                   value={pageTitle}
                   onChange={(e) => setPageTitle(e.target.value)}
                   placeholder="Enter page title"
-                  className="bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500"
+                  className="bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 focus:bg-white/90 transition-all duration-200"
                 />
-                <p className="text-xs text-white/70">
+                <p className={`text-xs ${pageTitle.length > 60 ? 'text-red-200' : 'text-white/70'}`}>
                   {pageTitle.length}/60 characters
                 </p>
               </div>
@@ -137,9 +179,9 @@ const Index = () => {
                   onChange={(e) => setMetaDescription(e.target.value)}
                   placeholder="Enter meta description"
                   rows={3}
-                  className="bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 resize-none"
+                  className="bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 resize-none focus:bg-white/90 transition-all duration-200"
                 />
-                <p className="text-xs text-white/70">
+                <p className={`text-xs ${metaDescription.length > 160 ? 'text-red-200' : 'text-white/70'}`}>
                   {metaDescription.length}/160 characters
                 </p>
               </div>
@@ -152,7 +194,7 @@ const Index = () => {
                     <Checkbox 
                       id="date" 
                       checked={showDate}
-                      onCheckedChange={setShowDate}
+                      onCheckedChange={(checked) => setShowDate(checked === true)}
                       className="border-white/50 data-[state=checked]:bg-blue-600"
                     />
                     <Label htmlFor="date" className="text-white/90 cursor-pointer">
@@ -163,7 +205,7 @@ const Index = () => {
                     <Checkbox 
                       id="rating" 
                       checked={showRating}
-                      onCheckedChange={setShowRating}
+                      onCheckedChange={(checked) => setShowRating(checked === true)}
                       className="border-white/50 data-[state=checked]:bg-blue-600"
                     />
                     <Label htmlFor="rating" className="text-white/90 cursor-pointer">
@@ -174,7 +216,7 @@ const Index = () => {
                     <Checkbox 
                       id="favicon" 
                       checked={showFavicon}
-                      onCheckedChange={setShowFavicon}
+                      onCheckedChange={(checked) => setShowFavicon(checked === true)}
                       className="border-white/50 data-[state=checked]:bg-blue-600"
                     />
                     <Label htmlFor="favicon" className="text-white/90 cursor-pointer">
@@ -188,10 +230,10 @@ const Index = () => {
               <div className="space-y-2">
                 <Label className="text-white font-medium">Device Preview</Label>
                 <Select value={device} onValueChange={setDevice}>
-                  <SelectTrigger className="bg-white/80 backdrop-blur border-white/50">
+                  <SelectTrigger className="bg-white/80 backdrop-blur border-white/50 focus:bg-white/90 transition-all duration-200">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white border-gray-200">
                     <SelectItem value="desktop">Desktop</SelectItem>
                     <SelectItem value="mobile">Mobile</SelectItem>
                   </SelectContent>
@@ -207,8 +249,11 @@ const Index = () => {
                 <h2 className="text-xl font-semibold text-white">
                   Search Preview
                 </h2>
-                <div className="text-sm text-white/70 bg-white/20 px-3 py-1 rounded-full">
-                  {device === 'mobile' ? '📱 Mobile' : '💻 Desktop'}
+                <div className="flex items-center gap-2">
+                  <div className="text-sm text-white/70 bg-white/20 px-3 py-1 rounded-full">
+                    {device === 'mobile' ? '📱 Mobile' : '💻 Desktop'}
+                  </div>
+                  <DownloadButton previewRef={previewRef} />
                 </div>
               </div>
               
