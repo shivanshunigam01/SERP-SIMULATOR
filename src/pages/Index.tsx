@@ -17,6 +17,7 @@ const Index = () => {
   const [pageTitle, setPageTitle] = useState('Example Domain - Your Website Title Here');
   const [metaDescription, setMetaDescription] = useState('This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission.');
   const [searchQuery, setSearchQuery] = useState('example domain website');
+  const [faviconUrl, setFaviconUrl] = useState<string | undefined>(undefined);
   const [showDate, setShowDate] = useState(true);
   const [showRating, setShowRating] = useState(true);
   const [showFavicon, setShowFavicon] = useState(true);
@@ -41,6 +42,7 @@ const Index = () => {
       const metadata = await fetchUrlMetadata(url);
       setPageTitle(metadata.title);
       setMetaDescription(metadata.description);
+      setFaviconUrl(metadata.favicon);
       
       toast({
         title: "Success",
@@ -76,7 +78,19 @@ const Index = () => {
       <div className="flex items-start gap-3">
         {showFavicon && (
           <div className="flex-shrink-0 mt-1">
-            <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center">
+            {faviconUrl ? (
+              <img 
+                src={faviconUrl} 
+                alt="Favicon" 
+                className="w-4 h-4 rounded-sm"
+                onError={(e) => {
+                  // Fallback to default icon if favicon fails to load
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+            ) : null}
+            <div className={`w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center ${faviconUrl ? 'hidden' : ''}`}>
               <Globe className="w-3 h-3 text-white" />
             </div>
           </div>
