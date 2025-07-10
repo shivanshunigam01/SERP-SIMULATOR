@@ -107,7 +107,7 @@ const Index = () => {
                 faviconUrl ? "hidden" : ""
               }`}
             >
-              <Globe className="w-3 h-3 text-white" />
+              <Globe className="w-3 h-3 text-black" />
             </div>
           </div>
         )}
@@ -139,10 +139,10 @@ const Index = () => {
     <div className="min-h-screen bg-[#FFB100] p-4">
       <div className="max-w-7xl mx-auto">
         {/* <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
+          <h1 className="text-4xl font-bold text-black mb-2 drop-shadow-lg">
             SERP Preview Tool
           </h1>
-          <p className="text-white/80 text-lg">
+          <p className="text-black/80 text-lg">
             See how your website appears in Google search results
           </p>
         </div> */}
@@ -153,7 +153,7 @@ const Index = () => {
             <div className="space-y-6">
               {/* URL Input */}
               <div className="space-y-2">
-                <Label htmlFor="url" className="text-white font-medium">
+                <Label htmlFor="url" className="text-black font-medium">
                   URL
                 </Label>
                 <div className="flex gap-2">
@@ -167,7 +167,7 @@ const Index = () => {
                   <Button
                     onClick={handleFetch}
                     disabled={isLoading}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 shadow-lg disabled:opacity-50 transition-all duration-200"
+                    className="bg-blue-600 hover:bg-blue-700 text-black px-6 shadow-lg disabled:opacity-50 transition-all duration-200"
                   >
                     {isLoading ? (
                       <>
@@ -183,7 +183,7 @@ const Index = () => {
 
               {/* Page Title */}
               <div className="space-y-2">
-                <Label htmlFor="title" className="text-white font-medium">
+                <Label htmlFor="title" className="text-black font-medium">
                   Page Title
                 </Label>
                 <Input
@@ -195,7 +195,7 @@ const Index = () => {
                 />
                 <p
                   className={`text-xs ${
-                    pageTitle.length > 60 ? "text-red-200" : "text-white/70"
+                    pageTitle.length > 60 ? "text-red-200" : "text-black/70"
                   }`}
                 >
                   {pageTitle.length}/60 characters
@@ -204,7 +204,7 @@ const Index = () => {
 
               {/* Meta Description */}
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-white font-medium">
+                <Label htmlFor="description" className="text-black font-medium">
                   Meta Description
                 </Label>
                 <Textarea
@@ -219,7 +219,7 @@ const Index = () => {
                   className={`text-xs ${
                     metaDescription.length > maxDescLength
                       ? "text-red-200"
-                      : "text-white/70"
+                      : "text-black/70"
                   }`}
                 >
                   {metaDescription.length}/{maxDescLength} characters
@@ -228,7 +228,7 @@ const Index = () => {
 
               {/* Device Selection */}
               <div className="space-y-2">
-                <Label className="text-white font-medium">Device</Label>
+                <Label className="text-black font-medium">Device</Label>
                 <Select value={device} onValueChange={setDevice}>
                   <SelectTrigger className="bg-white/80 backdrop-blur border-white/50 focus:bg-white/90 transition-all duration-200">
                     <SelectValue />
@@ -242,7 +242,7 @@ const Index = () => {
 
               {/* Description Max Length */}
               <div className="space-y-2">
-                <Label htmlFor="maxLength" className="text-white font-medium">
+                <Label htmlFor="maxLength" className="text-black font-medium">
                   Description Max. Length
                 </Label>
                 <Input
@@ -257,7 +257,7 @@ const Index = () => {
 
               {/* Checkboxes */}
               <div className="space-y-4">
-                <Label className="text-white font-medium">
+                <Label className="text-black font-medium">
                   Display Options
                 </Label>
                 <div className="space-y-3">
@@ -272,7 +272,7 @@ const Index = () => {
                     />
                     <Label
                       htmlFor="date"
-                      className="text-white/90 cursor-pointer"
+                      className="text-black/90 cursor-pointer"
                     >
                       Date
                     </Label>
@@ -288,7 +288,7 @@ const Index = () => {
                     />
                     <Label
                       htmlFor="rating"
-                      className="text-white/90 cursor-pointer"
+                      className="text-black/90 cursor-pointer"
                     >
                       Rating
                     </Label>
@@ -304,7 +304,7 @@ const Index = () => {
                     />
                     <Label
                       htmlFor="favicon"
-                      className="text-white/90 cursor-pointer"
+                      className="text-black/90 cursor-pointer"
                     >
                       Favicon
                     </Label>
@@ -314,7 +314,7 @@ const Index = () => {
 
               {/* Search Query */}
               <div className="space-y-2">
-                <Label htmlFor="searchQuery" className="text-white font-medium">
+                <Label htmlFor="searchQuery" className="text-black font-medium">
                   Search Query
                 </Label>
                 <div className="relative">
@@ -335,11 +335,11 @@ const Index = () => {
           <Card className="backdrop-blur-lg bg-white/20 border-white/30 shadow-xl rounded-2xl p-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-white">
+                <h2 className="text-xl font-semibold text-black">
                   Search Preview
                 </h2>
                 <div className="flex items-center gap-2">
-                  <div className="text-sm text-white/70 bg-white/20 px-3 py-1 rounded-full">
+                  <div className="text-sm text-black/70 bg-white/20 px-3 py-1 rounded-full">
                     {device === "mobile" ? "📱 Mobile" : "💻 Desktop"}
                   </div>
                   <DownloadButton previewRef={previewRef} />
