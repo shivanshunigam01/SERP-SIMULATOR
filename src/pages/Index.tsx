@@ -167,7 +167,7 @@ const Index = () => {
                   <Button
                     onClick={handleFetch}
                     disabled={isLoading}
-                    className="bg-blue-600 hover:bg-blue-700 text-black px-6 shadow-lg disabled:opacity-50 transition-all duration-200"
+                    className="bg-black hover:bg-gray-900 text-white px-6 shadow-lg disabled:opacity-50 transition-all duration-200"
                   >
                     {isLoading ? (
                       <>
@@ -268,7 +268,7 @@ const Index = () => {
                       onCheckedChange={(checked) =>
                         setShowDate(checked === true)
                       }
-                      className="border-white/50 data-[state=checked]:bg-blue-600"
+                      className="border-black data-[state=checked]:bg-black"
                     />
                     <Label
                       htmlFor="date"
@@ -284,7 +284,7 @@ const Index = () => {
                       onCheckedChange={(checked) =>
                         setShowRating(checked === true)
                       }
-                      className="border-white/50 data-[state=checked]:bg-blue-600"
+                      className="border-black data-[state=checked]:bg-black"
                     />
                     <Label
                       htmlFor="rating"
@@ -300,7 +300,7 @@ const Index = () => {
                       onCheckedChange={(checked) =>
                         setShowFavicon(checked === true)
                       }
-                      className="border-white/50 data-[state=checked]:bg-blue-600"
+                      className="border-black data-[state=checked]:bg-black"
                     />
                     <Label
                       htmlFor="favicon"
