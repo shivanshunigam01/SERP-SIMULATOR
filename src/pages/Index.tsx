@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Star, Globe, Loader2 } from 'lucide-react';
+import { Star, Globe, Loader2, Search } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { fetchUrlMetadata } from '@/utils/urlFetcher';
 import DownloadButton from '@/components/DownloadButton';
@@ -16,10 +16,12 @@ const Index = () => {
   const [url, setUrl] = useState('https://example.com');
   const [pageTitle, setPageTitle] = useState('Example Domain - Your Website Title Here');
   const [metaDescription, setMetaDescription] = useState('This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission.');
+  const [searchQuery, setSearchQuery] = useState('example domain website');
   const [showDate, setShowDate] = useState(true);
   const [showRating, setShowRating] = useState(true);
   const [showFavicon, setShowFavicon] = useState(true);
   const [device, setDevice] = useState('desktop');
+  const [descriptionMaxLength, setDescriptionMaxLength] = useState('160');
   const [isLoading, setIsLoading] = useState(false);
   
   const previewRef = useRef<HTMLDivElement>(null);
@@ -63,6 +65,8 @@ const Index = () => {
       />
     ));
   };
+
+  const maxDescLength = parseInt(descriptionMaxLength) || 160;
 
   const SerpPreview = () => (
     <div 
@@ -124,7 +128,7 @@ const Index = () => {
               {/* URL Input */}
               <div className="space-y-2">
                 <Label htmlFor="url" className="text-white font-medium">
-                  Website URL
+                  URL
                 </Label>
                 <div className="flex gap-2">
                   <Input
@@ -142,7 +146,7 @@ const Index = () => {
                     {isLoading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        FETCHING
+                        FETCH
                       </>
                     ) : (
                       'FETCH'
@@ -181,12 +185,41 @@ const Index = () => {
                   rows={3}
                   className="bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 resize-none focus:bg-white/90 transition-all duration-200"
                 />
-                <p className={`text-xs ${metaDescription.length > 160 ? 'text-red-200' : 'text-white/70'}`}>
-                  {metaDescription.length}/160 characters
+                <p className={`text-xs ${metaDescription.length > maxDescLength ? 'text-red-200' : 'text-white/70'}`}>
+                  {metaDescription.length}/{maxDescLength} characters
                 </p>
               </div>
 
-              {/* Toggle Options */}
+              {/* Device Selection */}
+              <div className="space-y-2">
+                <Label className="text-white font-medium">Device</Label>
+                <Select value={device} onValueChange={setDevice}>
+                  <SelectTrigger className="bg-white/80 backdrop-blur border-white/50 focus:bg-white/90 transition-all duration-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white border-gray-200">
+                    <SelectItem value="desktop">Desktop</SelectItem>
+                    <SelectItem value="mobile">Mobile</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Description Max Length */}
+              <div className="space-y-2">
+                <Label htmlFor="maxLength" className="text-white font-medium">
+                  Description Max. Length
+                </Label>
+                <Input
+                  id="maxLength"
+                  type="number"
+                  value={descriptionMaxLength}
+                  onChange={(e) => setDescriptionMaxLength(e.target.value)}
+                  placeholder="160"
+                  className="bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 focus:bg-white/90 transition-all duration-200"
+                />
+              </div>
+
+              {/* Checkboxes */}
               <div className="space-y-4">
                 <Label className="text-white font-medium">Display Options</Label>
                 <div className="space-y-3">
@@ -198,7 +231,7 @@ const Index = () => {
                       className="border-white/50 data-[state=checked]:bg-blue-600"
                     />
                     <Label htmlFor="date" className="text-white/90 cursor-pointer">
-                      Show Date
+                      Date
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -209,7 +242,7 @@ const Index = () => {
                       className="border-white/50 data-[state=checked]:bg-blue-600"
                     />
                     <Label htmlFor="rating" className="text-white/90 cursor-pointer">
-                      Show Rating
+                      Rating
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -220,24 +253,27 @@ const Index = () => {
                       className="border-white/50 data-[state=checked]:bg-blue-600"
                     />
                     <Label htmlFor="favicon" className="text-white/90 cursor-pointer">
-                      Show Favicon
+                      Favicon
                     </Label>
                   </div>
                 </div>
               </div>
 
-              {/* Device Selection */}
+              {/* Search Query */}
               <div className="space-y-2">
-                <Label className="text-white font-medium">Device Preview</Label>
-                <Select value={device} onValueChange={setDevice}>
-                  <SelectTrigger className="bg-white/80 backdrop-blur border-white/50 focus:bg-white/90 transition-all duration-200">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-gray-200">
-                    <SelectItem value="desktop">Desktop</SelectItem>
-                    <SelectItem value="mobile">Mobile</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="searchQuery" className="text-white font-medium">
+                  Search Query
+                </Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Input
+                    id="searchQuery"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Enter search query"
+                    className="pl-10 bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 focus:bg-white/90 transition-all duration-200"
+                  />
+                </div>
               </div>
             </div>
           </Card>
@@ -259,10 +295,15 @@ const Index = () => {
               
               <div className="bg-white/90 backdrop-blur rounded-xl p-4 shadow-inner">
                 <div className="mb-4 pb-2 border-b border-gray-200">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
                     <Globe className="w-4 h-4" />
                     <span>About 1,230,000 results (0.45 seconds)</span>
                   </div>
+                  {searchQuery && (
+                    <div className="text-lg text-gray-700 mb-2">
+                      Search results for: <span className="font-medium">"{searchQuery}"</span>
+                    </div>
+                  )}
                 </div>
                 
                 <SerpPreview />
