@@ -30,8 +30,24 @@ const Index = () => {
   const [descriptionMaxLength, setDescriptionMaxLength] = useState("157");
   const [isLoading, setIsLoading] = useState(false);
 
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const MAX_TITLE_PX = 580;
+  const MAX_URL_PX = 385;
+  const MAX_DESC_PX = 990;
 
+  const getTextPixelWidth = (text: string, font: string = "16px Arial") => {
+    if (!canvasRef.current) {
+      canvasRef.current = document.createElement("canvas");
+    }
+    const context = canvasRef.current.getContext("2d");
+    if (!context) return 0;
+    context.font = font;
+    return context.measureText(text).width;
+  };
+  const titlePx = Math.round(getTextPixelWidth(pageTitle, "16px Arial"));
+  const urlPx = Math.round(getTextPixelWidth(url, "14px Arial"));
+  const descPx = Math.round(getTextPixelWidth(metaDescription, "14px Arial"));
   const handleFetch = async () => {
     if (!url.trim()) {
       toast({
@@ -117,6 +133,13 @@ const Index = () => {
           </div>
           <h3 className="text-xl text-blue-600 hover:underline cursor-pointer mb-2 line-clamp-2 transition-colors duration-200">
             {pageTitle}
+            <p
+              className={`text-xs ${
+                titlePx > MAX_TITLE_PX ? "text-red-500" : "text-black/70"
+              }`}
+            >
+              {titlePx}px / {MAX_TITLE_PX}px
+            </p>
           </h3>
           <p className="text-sm text-gray-600 leading-relaxed mb-2 line-clamp-3">
             {metaDescription}
@@ -156,28 +179,37 @@ const Index = () => {
                 <Label htmlFor="url" className="text-black font-medium">
                   URL
                 </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="url"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="Enter your website URL"
-                    className="flex-1 bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 focus:bg-white/90 transition-all duration-200"
-                  />
-                  <Button
-                    onClick={handleFetch}
-                    disabled={isLoading}
-                    className="bg-black hover:bg-gray-900 text-white px-6 shadow-lg disabled:opacity-50 transition-all duration-200"
+                <div className="flex flex-col gap-1">
+                  <div className="flex gap-2">
+                    <Input
+                      id="url"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="Enter your website URL"
+                      className="flex-1 bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 focus:bg-white/90 transition-all duration-200"
+                    />
+                    <Button
+                      onClick={handleFetch}
+                      disabled={isLoading}
+                      className="bg-black hover:bg-gray-900 text-white px-6 shadow-lg disabled:opacity-50 transition-all duration-200"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          FETCH
+                        </>
+                      ) : (
+                        "FETCH"
+                      )}
+                    </Button>
+                  </div>
+                  <p
+                    className={`text-xs ${
+                      urlPx > MAX_URL_PX ? "text-red-500" : "text-black/70"
+                    }`}
                   >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        FETCH
-                      </>
-                    ) : (
-                      "FETCH"
-                    )}
-                  </Button>
+                    {urlPx}px / {MAX_URL_PX}px
+                  </p>
                 </div>
               </div>
 
@@ -193,13 +225,22 @@ const Index = () => {
                   placeholder="Enter page title"
                   className="bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 focus:bg-white/90 transition-all duration-200"
                 />
-                <p
-                  className={`text-xs ${
-                    pageTitle.length > 60 ? "text-red-200" : "text-black/70"
-                  }`}
-                >
-                  {pageTitle.length}/60 characters
-                </p>
+                <div className="flex justify-between text-xs">
+                  <p
+                    className={`${
+                      pageTitle.length > 60 ? "text-red-200" : "text-black/70"
+                    }`}
+                  >
+                    {/* {pageTitle.length}/60 characters */}
+                  </p>
+                  <p
+                    className={`${
+                      titlePx > MAX_TITLE_PX ? "text-red-500" : "text-black/70"
+                    }`}
+                  >
+                    {titlePx}px / {MAX_TITLE_PX}px
+                  </p>
+                </div>
               </div>
 
               {/* Meta Description */}
@@ -215,15 +256,24 @@ const Index = () => {
                   rows={3}
                   className="bg-white/80 backdrop-blur border-white/50 placeholder:text-gray-500 resize-none focus:bg-white/90 transition-all duration-200"
                 />
-                <p
-                  className={`text-xs ${
-                    metaDescription.length > maxDescLength
-                      ? "text-red-200"
-                      : "text-black/70"
-                  }`}
-                >
-                  {metaDescription.length}/{maxDescLength} characters
-                </p>
+                <div className="flex justify-between text-xs">
+                  <p
+                    className={`${
+                      metaDescription.length > maxDescLength
+                        ? "text-red-200"
+                        : "text-black/70"
+                    }`}
+                  >
+                    {/* {metaDescription.length}/{maxDescLength} characters */}
+                  </p>
+                  <p
+                    className={`${
+                      descPx > MAX_DESC_PX ? "text-red-500" : "text-black/70"
+                    }`}
+                  >
+                    {descPx}px / {MAX_DESC_PX}px
+                  </p>
+                </div>
               </div>
 
               {/* Device Selection */}
